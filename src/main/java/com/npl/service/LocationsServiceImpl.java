@@ -1,11 +1,14 @@
 package com.npl.service;
 
 import com.npl.Dto.DistrictDto;
+import com.npl.Dto.MunicipalityDto;
 import com.npl.Dto.ProvinceDto;
 import com.npl.exception.NoDataFound;
 import com.npl.model.District;
+import com.npl.model.Municipality;
 import com.npl.model.Province;
 import com.npl.repository.DistrictRepo;
+import com.npl.repository.MunicipalityRepo;
 import com.npl.repository.ProvinceRepo;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -24,6 +27,7 @@ public class LocationsServiceImpl implements LocationsService {
 	private final ModelMapper modelMapper;
 	
 	private final DistrictRepo districtRepo;
+	private final MunicipalityRepo municipalityRepo;
 	
 	@Override
 	public List<ProvinceDto> getAllProvince() {
@@ -52,5 +56,22 @@ public class LocationsServiceImpl implements LocationsService {
 				})
 				.collect(Collectors.toList());
 	}
-
+	
+	@Override
+	public List<MunicipalityDto> getMunicipalityByDistrictId(Long districtId) {
+		Optional<District> districts =districtRepo.findById(districtId);
+		if(districts.isEmpty()){
+			throw new NoDataFound("Municipalities is not found with this district id:" +districtId);
+		}
+		District district= districts.get();
+		List<Municipality> municipalities =municipalityRepo.findByDistrictId(districtId);
+		return municipalities.stream()
+				.map(municipality -> {
+					MunicipalityDto municipalityDto = modelMapper.map(municipality, MunicipalityDto.class);
+					municipalityDto.setDistrictName(district.getName());
+					return municipalityDto;
+				})
+				.collect(Collectors.toList());
+	}
+	
 }

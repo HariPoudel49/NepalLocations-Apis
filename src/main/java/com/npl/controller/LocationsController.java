@@ -1,6 +1,7 @@
 package com.npl.controller;
 
 import com.npl.Dto.DistrictDto;
+import com.npl.Dto.MunicipalityDto;
 import com.npl.Dto.ProvinceDto;
 import com.npl.service.LocationsService;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,12 @@ private final LocationsService locationsService;
 	public ResponseEntity<List<DistrictDto>> getDistrict(@PathVariable Long provinceId){
 		List<DistrictDto>district= locationsService.getDistrictByProvinceId(provinceId);
 		return new ResponseEntity<>(district, HttpStatus.FOUND);
+	}
+	
+	@GetMapping("/municipalities/{districtId}")
+	public ResponseEntity<List<MunicipalityDto>> getMnc(@PathVariable Long districtId ){
+		List<MunicipalityDto> municipalityDtos = locationsService.getMunicipalityByDistrictId(districtId);
+		return new ResponseEntity<>(municipalityDtos, HttpStatus.FOUND);
 	}
 
 }
